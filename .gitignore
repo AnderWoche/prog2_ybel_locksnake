@@ -1,5 +1,8 @@
 # IDE generated files #
 ######################
+
+/.claude/
+
 .vscode/
 .idea/
 *.iml
@@ -25,7 +28,6 @@
 tmp/
 temp/
 resources/
-docs/
 pdf/
 
 

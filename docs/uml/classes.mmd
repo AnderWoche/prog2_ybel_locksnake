@@ -1,0 +1,249 @@
+classDiagram
+    direction LR
+
+    %% =================== model ===================
+    class Position {
+      -int x
+      -int y
+      +x() int
+      +y() int
+    }
+
+    class Direction {
+      <<enumeration>>
+      UP
+      DOWN
+      LEFT
+      RIGHT
+      NONE
+      +applyTo(Position) Position
+      +oppositeDirection() Direction
+    }
+
+    class CellType {
+      <<enumeration>>
+      EMPTY
+      WALL
+      PIN_SLOT
+    }
+
+    class Pin {
+      -Position position
+      -State state
+      -Direction activationDirection
+      +withState(State) Pin
+      +position() Position
+      +state() State
+      +activationDirection() Direction
+    }
+
+    class PinState {
+      <<enumeration>>
+      LOW
+      HIGH
+      +isSet() boolean
+    }
+
+    class Snake {
+      -List~Position~ body
+      +head() Position
+      +body() List~Position~
+      +nextHead(Direction) Position
+      +occupies(Position) boolean
+      +grow(Direction) Snake
+    }
+
+    class Level {
+      -int width
+      -int height
+      -CellType[][] cells
+      -List~Pin~ pins
+      -Position snakeStart
+      +isInside(Position) boolean
+      +cellAt(Position) CellType
+      +width() int
+      +height() int
+      +cells() CellType[][]
+      +pins() List~Pin~
+      +snakeStart() Position
+    }
+
+    %% =================== logic ===================
+    class GameState {
+      -Level level
+      -Snake snake
+      -List~Pin~ pins
+      -Status status
+      -Direction pendingDirection
+      +tick() GameState
+      +level() Level
+      +snake() Snake
+      +pins() List~Pin~
+      +status() Status
+      +pendingDirection() Direction
+    }
+
+    class GameStateStatus {
+      <<enumeration>>
+      RUNNING
+      WON
+      LOST_SELF_COLLISION
+      LOST_OUT_OF_BOUNDS
+      +isRunning() boolean
+    }
+
+    class GameEngine {
+      -GameState state
+      -GamePanel panel
+      +state() GameState
+      +setGamePanel(GamePanel) void
+      +update(Direction) void
+      +tick() void
+    }
+
+    %% =================== io ===================
+    class LevelLoader {
+      <<utility>>
+      +loadLevelFromPath(Path) Level$
+      +loadLevelFromResource(String) Level$
+      -parseLines(List~String~) Level$
+    }
+
+    class MusicPlayer {
+      <<utility>>
+      +playLoopFromResource(String) void$
+    }
+
+    %% =================== ui ===================
+    class GamePanel {
+      -GameState state
+      -GameRenderer renderer
+      -GameEngine gameEngine
+      +update(GameState) void
+      +setGameEngine(GameEngine) void
+      -setupKeyBindings(Direction, Iterable~Integer~) void
+      #paintComponent(Graphics) void
+    }
+
+    class JPanel {
+      <<javax.swing>>
+    }
+
+    %% =================== ui.render ===================
+    class GameRenderer {
+      <<interface>>
+      +render(Graphics2D, GameState, int) void
+    }
+
+    class Java2DRenderer {
+      +render(Graphics2D, GameState, int) void
+    }
+
+    class TextureRenderer {
+      -BufferedImage WALL_TEX
+      -BufferedImage FLOOR_TEX
+      -BufferedImage PIN_LOW_TEX
+      -BufferedImage PIN_HIGH_TEX
+      -BufferedImage SNAKE_HEAD_TEX
+      -BufferedImage SNAKE_BODY_TEX
+      +render(Graphics2D, GameState, int) void
+      -loadImage(String) BufferedImage
+    }
+
+    %% =================== settings ===================
+    class GameConstants {
+      <<utility>>
+      +TICK_MS int$
+      +TILE_SIZE int$
+    }
+
+    class InputConstants {
+      <<utility>>
+      +BINDINGS Map~Direction,List~Integer~~$
+    }
+
+    class AudioConstants {
+      <<utility>>
+      +BACKGROUND_MUSIC_RESOURCE String$
+    }
+
+    class TextureConstants {
+      <<utility>>
+      +WALL_TEXTURE String$
+      +FLOOR_TEXTURE String$
+      +PIN_LOW_TEXTURE String$
+      +PIN_HIGH_TEXTURE String$
+      +SNAKE_HEAD_TEXTURE String$
+      +SNAKE_BODY_TEXTURE String$
+    }
+
+    class LevelConstants {
+      <<utility>>
+      -LEVELS Map~Id,String~$
+      +defaultLevel() String$
+      +levelById(Id) String$
+    }
+
+    class LevelId {
+      <<enumeration>>
+      LEVEL1
+      LEVEL2
+    }
+
+    %% =================== entry point ===================
+    class Main {
+      +main() void$
+      -handleGameEnd(ActionEvent, GameState, JFrame) void$
+    }
+
+    %% =================== Beziehungen ===================
+    Pin *-- PinState : inner enum
+    GameState *-- GameStateStatus : inner enum
+    LevelConstants *-- LevelId : inner enum
+
+    GamePanel --|> JPanel
+    Java2DRenderer ..|> GameRenderer
+    TextureRenderer ..|> GameRenderer
+
+    Snake o-- "1..*" Position : body
+    Pin --> "1" Position : position
+    Pin --> "1" Direction : activationDirection
+    Level o-- "*" Pin : pins
+    Level --> "1" Position : snakeStart
+    Level ..> CellType : cells[][]
+
+    GameState --> "1" Level
+    GameState --> "1" Snake
+    GameState o-- "*" Pin : pins
+    GameState --> "1" Direction : pendingDirection
+    GameEngine *-- "1" GameState : state
+    GameEngine --> "1" GamePanel : observer
+
+    GamePanel --> "1" GameState : state
+    GamePanel --> "1" GameRenderer : renderer
+    GamePanel --> "0..1" GameEngine
+    GamePanel ..> Direction : key to Direction
+    GamePanel ..> InputConstants
+    GamePanel ..> GameConstants
+
+    GameRenderer ..> GameState : reads
+    TextureRenderer ..> TextureConstants
+
+    LevelLoader ..> Level : creates
+    LevelLoader ..> Pin : creates
+    LevelLoader ..> Position : creates
+    LevelLoader ..> CellType
+    LevelLoader ..> Direction
+
+    Direction ..> Position : applyTo()
+
+    InputConstants ..> Direction
+    LevelConstants ..> LevelId
+
+    Main ..> LevelLoader
+    Main ..> LevelConstants
+    Main ..> GameEngine
+    Main ..> GamePanel
+    Main ..> Java2DRenderer
+    Main ..> GameConstants
+    Main ..> GameState

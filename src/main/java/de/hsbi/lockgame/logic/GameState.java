@@ -5,6 +5,8 @@ import java.util.List;
 
 public final class GameState {
 
+
+
   public GameState(
       Level level, Snake snake, List<Pin> pins, Status status, Direction pendingDirection) {
     // TODO: lege einen neuen GameState mit den übergebenen Informationen an

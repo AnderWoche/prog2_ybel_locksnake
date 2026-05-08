@@ -47,11 +47,12 @@ public class Main {
                 .start();
 
           } catch (Exception e) {
-            JOptionPane.showMessageDialog(
-                null,
-                "Fehler beim Starten des Spiels: " + e.getMessage(),
-                "Fehler",
-                JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+            //            JOptionPane.showMessageDialog(
+            //                null,
+            //                "Fehler beim Starten des Spiels: " + e.getMessage(),
+            //                "Fehler",
+            //                JOptionPane.ERROR_MESSAGE);
           }
         });
   }
