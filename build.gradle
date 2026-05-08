@@ -33,9 +33,7 @@ tasks.named('test') {
 spotless {
     java {
         target 'src/**/*.java'
-        googleJavaFormat('1.25.2')
-            .reflowLongStrings()
-        indentWithSpaces(4)
+        googleJavaFormat('1.25.2').reflowLongStrings().aosp()
         trimTrailingWhitespace()
         endWithNewline()
     }
