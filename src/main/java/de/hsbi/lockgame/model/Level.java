@@ -25,6 +25,10 @@ public final class Level {
         return cells[pos.x()][pos.y()];
     }
 
+    public Pin getPinAt(Position pos) {
+        return pins.stream().filter(it -> it.position().equals(pos)).findFirst().orElse(null);
+    }
+
     public int width() {
         return width;
     }

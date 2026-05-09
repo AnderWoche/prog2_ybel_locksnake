@@ -1,6 +1,7 @@
 package de.hsbi.lockgame.io;
 
 import de.hsbi.lockgame.model.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,10 +22,15 @@ public final class LevelLoader {
         if (in == null) throw new IOException("level file not found: " + resourcePath);
 
         try (in;
-                var br = new BufferedReader(new InputStreamReader(in))) {
+             var br = new BufferedReader(new InputStreamReader(in))) {
             var lines = br.lines().filter(l -> !l.isBlank()).toList();
             return parseLines(lines);
         }
+    }
+
+    public static Level loadLevelFromString(String levelData) {
+        var lines = levelData.lines().filter(l -> !l.isBlank()).toList();
+        return parseLines(lines);
     }
 
     private static Level parseLines(List<String> lines) {

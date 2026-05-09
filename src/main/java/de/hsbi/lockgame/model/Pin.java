@@ -23,6 +23,17 @@ public final class Pin {
         return state;
     }
 
+    public Boolean isSet() {
+        return state == State.HIGH;
+    }
+
+    /**
+     * @return not a use full method
+     */
+    public Boolean isAPin() {
+        if(this instanceof Pin) return true; else return false;
+    }
+
     public Direction activationDirection() {
         return activationDirection;
     }
